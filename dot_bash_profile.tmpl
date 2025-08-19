@@ -1,0 +1,126 @@
+# Only run for interactive shells
+case $- in
+  *i*) ;; # interactive
+  *) return ;; # non-interactive shell exits early
+esac
+
+set -o vi
+export EDITOR=vi
+export VISUAL=nvim
+export MYVIMRC=$HOME/.config/nvim/init.vim
+
+# Eternal history
+export HISTCONTROL=ignoredups:erasedups  # no duplicate entries
+export HISTSIZE=1000                     # big big history
+export HISTFILESIZE=1000                 # big big history
+shopt -s histappend                      # append to history, don't overwrite it
+
+export TERM=xterm-256color
+
+export PS1="\[$(tput setaf 39)\]\u\[$(tput setaf 81)\]@\[$(tput setaf 77)\]\h \[$(tput setaf 226)\]\w \[$(tput sgr0)\]$ "
+
+# AWS 
+export PATH=/usr/local/bin/aws_completer:$PATH
+# Case insensitivity in bash complete
+set completion-ignore-case on
+set show-all-if-ambiguous on
+alias assume=". assume"
+export PATH="$PATH:${BMA_HOME:-$HOME/.bash-my-aws}/bin"
+export BMA_COLUMNISE_ONLY_WHEN_TERMINAL_PRESENT=true
+source ${BMA_HOME:-$HOME/.bash-my-aws}/aliases
+source ${BMA_HOME:-$HOME/.bash-my-aws}/bash_completion.sh
+
+# Mac
+if [[ "$(uname)" == "Darwin" ]]; then
+  if [ -f /opt/homebrew/bin/brew ]; then
+    eval "$(/opt/homebrew/bin/brew shellenv)"
+  fi
+  export PATH=/usr/local/bin:/usr/local/sbin:/Users/=$(whoami)/Library/Python/3.7/bin:${BMA_HOME:-$HOME/.bash-my-aws}/bin:/usr/local/bin/aws_completer:$GOPATH:$GOBIN:$HOME/.local/bin:${PATH}
+  # Suppress MacOS zsh message
+  export BASH_SILENCE_DEPRECATION_WARNING=1
+fi
+
+# Git
+source $HOME/.config/bash/git-completion.bash
+parse_git_branch() {
+     git branch 2> /dev/null | sed -e '/^[^*]/d' -e 's/* \(.*\)/ (\1)/'
+}
+# hide git stash count, I am easily confused
+export SCM_GIT_SHOW_STASH_INFO=false
+
+# Setup z which is a quick cd replacement
+#. $HOME/.config/bash/z.sh
+# Newly replaced by zoxide, a replacement in rust
+
+# Bash Insulter
+#if [ -f /etc/bash.command-not-found ]; then
+#    . /etc/bash.command-not-found
+#fi
+
+
+
+# Pyenv
+if command -v pyenv 1>/dev/null 2>&1; then
+  eval "$(pyenv init -)"
+fi
+
+# Suppress MacOS zsh message
+export BASH_SILENCE_DEPRECATION_WARNING=1
+
+# Go setup
+export GOPATH=/Users/jesse/go
+export GOBIN=$GOPATH/bin
+export GO111MODULE=auto
+
+# generate random password
+#randompass() {
+#LC_CTYPE=C < /dev/urandom tr -dc _A-Z-a-z-0-9 | head -c12;echo;
+#}
+
+
+##function run
+#run() {
+#    number=$1
+#    shift
+#    for i in `seq $number`; do
+#      $@
+#    done
+#}
+
+export VAULT_USER="jperry2"
+
+export AWS_VAULT_USER=jperry2
+
+export GPG_TTY=$(tty)
+export SOPS_AGE_KEY_FILE=$HOME/.sops/nebula.age
+export SOPS_AGE_RECIPIENTS=age104xn5xt46wgg3n27em955qm9wkdwrxafx4crtqgq2fzz6zfn3s7slskqwt
+
+
+if [ -f "$HOME/.cargo/env" ]; then
+  source "$HOME/.cargo/env"
+fi
+export PATH=$HOME/.local/bin:$PATH
+
+#determines search program for fzf
+if type ag &> /dev/null; then
+    export FZF_DEFAULT_COMMAND='ag -p ~/.gitignore -g ""'
+fi
+
+#refer rg over ag
+if type rg &> /dev/null; then
+    export FZF_DEFAULT_COMMAND='rg --files --hidden --ignore-file ~/.gitignore'
+fi
+
+if [ -f "$HOME/.fzf.bash" ]; then
+  source "$HOME/.fzf.bash"
+fi
+
+[ -f $HOME/.profile.d/bethel.sh ] && source $HOME/.profile.d/bethel.sh
+
+
+# Load aliases
+[ -f ~/.aliases ] && . ~/.aliases
+# Load neovim alias if needed
+if [ -f $HOME/nvim.appimage ]; then
+    alias nvim="~/nvim.appimage"
+fi
