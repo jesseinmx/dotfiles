@@ -27,8 +27,6 @@ set show-all-if-ambiguous on
 alias assume=". assume"
 export PATH="$PATH:${BMA_HOME:-$HOME/.bash-my-aws}/bin"
 export BMA_COLUMNISE_ONLY_WHEN_TERMINAL_PRESENT=true
-source ${BMA_HOME:-$HOME/.bash-my-aws}/aliases
-source ${BMA_HOME:-$HOME/.bash-my-aws}/bash_completion.sh
 
 # Mac
 if [[ "$(uname)" == "Darwin" ]]; then
@@ -41,7 +39,6 @@ if [[ "$(uname)" == "Darwin" ]]; then
 fi
 
 # Git
-source $HOME/.config/bash/git-completion.bash
 parse_git_branch() {
      git branch 2> /dev/null | sed -e '/^[^*]/d' -e 's/* \(.*\)/ (\1)/'
 }
